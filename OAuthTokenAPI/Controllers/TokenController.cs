@@ -19,9 +19,17 @@ namespace OAuthTokenAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<TokenDetails>> Generate([FromBody] Payload payload)
         {
-            var tokens = _tokenService.Create(payload);
+            if (ModelState.IsValid)
+            {
+                var tokens = _tokenService.Create(payload);
 
-            return Ok(tokens);
+                return Ok(tokens);
+            }
+            else
+            {
+                return BadRequest();
+            }
+
         }
     }
 }

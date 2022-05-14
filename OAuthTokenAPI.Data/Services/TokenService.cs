@@ -15,18 +15,23 @@ namespace OAuthTokenAPI.Data.Services
     {
         public TokenDetails Create(Payload payload)
         {
+            IDateTimeProvider provider = new UtcDateTimeProvider();
+            var timeNow = provider.GetNow();
+            int accessExpiry = (int)UnixEpoch.GetSecondsSince(timeNow) + TokenConstant.AccessExpiry; 
+            int refreshExpiry = (int)UnixEpoch.GetSecondsSince(timeNow) + TokenConstant.RefreshExpiry;
+
             var accessTokenPayload = new Dictionary<string, dynamic>()
             {
                 { "username", payload.Username },
                 { "password", payload.Password },
-                { "exp", DateTime.Now.AddSeconds(TokenConstant.AccessExpiry) }
+                { "exp", accessExpiry }
             };
 
             var refreshTokenPayload = new Dictionary<string, dynamic>()
             {
                 { "username", payload.Username },
                 { "password", payload.Username },
-                { "exp", DateTime.Now.AddSeconds(TokenConstant.RefreshExpiry) }
+                { "exp", refreshExpiry }
             };
 
             IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
